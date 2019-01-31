@@ -3,7 +3,7 @@ CREATE DATABASE bamazon_db;
 USE bamazon_db;
 
 --Creating the products table
-CREATE TABLE characters
+CREATE TABLE products
 (
   item_id INT NOT NULL AUTO_INCREMENT,
   product_name VARCHAR(255) NOT NULL,
