@@ -1,8 +1,9 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const cTable = require("console.table");
 
 //connection parameters for mysql database with mysql npm package
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
   host: "localhost",
   port: 3306,
   user: "root",
@@ -11,7 +12,7 @@ const connection = mysql.createConnection({
 });
 
 //connect to the mysql server
-connection.connect(function (err) {
+db.connect(function (err) {
   if (err) throw err;
   console.log("Welcome to Bamazon!")
   connect();
@@ -35,4 +36,10 @@ function connect() {
   })
 };
 
-//Displaying product table from mySQL
+//Displaying product table from mySQL using consttable and es6 attempt
+const displayProductTable = () => {
+  db.query("SELECT * FROM products", function (err, dbProducts) {
+    if (err) throw err;
+    console.table(dbProducts);
+  })
+}
