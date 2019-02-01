@@ -95,7 +95,7 @@ const displayProductTable = () => {
           filter: function (input) {
             return parseInt(input);
           }
-        }).then(function(response) {
+        }).then(function (response) {
           if (response.quantityPrompt > itemId.stock_quantity) {
             console.log("Looks like we do not have enough quantity to fufil your order");
             //inquirer prompt to loop through quantity again or exit
@@ -116,13 +116,14 @@ const displayProductTable = () => {
                 // process.exit(0);
               }
             });
-
-            
-
           }
+          priceFunction();
         });
       }
-
+//function to calculate price and confirm
+      function priceFunction() {
+        console.log("We have made it to the final price function?")
+      }
     });
   })
 }
