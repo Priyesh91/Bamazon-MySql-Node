@@ -35,7 +35,12 @@ function connect() {
     }
   })
 };
-
+let cart = {
+  product: "",
+  total: 0,
+  quantity: 0,
+  unitprice: 0
+};
 //Displaying product table from mySQL using consttable and es6 attempt
 const displayProductTable = () => {
   db.query("SELECT * FROM products", function (err, dbProducts) {
@@ -63,7 +68,11 @@ const displayProductTable = () => {
       //linking item id to product in database
       const itemId = dbProducts.find(item => item.item_id === purchaseQuestion);
 
-      console.log(itemId);
+      // console.log(itemId);
+      //updating cart object with customer selection
+      cart.product = itemId.product_name;
+      cart.unitprice = itemId.price;
+
       //prompt confriming product selection, if not loop back, if yes move to quantityquesiton
       inquirer.prompt({
         name: "confirmPrompt",
@@ -83,6 +92,7 @@ const displayProductTable = () => {
         }
       });
       // //function asking for quantity of item.
+
       function quantityQuestion() {
         inquirer.prompt({
           name: "quantityPrompt",
@@ -117,12 +127,42 @@ const displayProductTable = () => {
               }
             });
           }
+          // console.log(cart);
+          cart.quantity = (response.quantityPrompt);
+          cart.total = response.quantityPrompt * itemId.price;
+          // console.log(cart);
+
           priceFunction();
         });
       }
-//function to calculate price and confirm
+      //function to calculate price and confirm
       function priceFunction() {
-        console.log("We have made it to the final price function?")
+        console.log(cart);
+        // console.log("We have made it to the final price function?");
+        inquirer.prompt({
+          name: "confirmPurchasePrompt",
+          type: "list",
+          message: `
+          ------------------
+          Product: ${cart.product}
+          UnitPrice: ${cart.unitprice}
+          Quantity: ${cart.quantity}
+          Total: ${cart.total}
+          ------------------`,
+          choices: ["Confirm Purchase", "Exit"]
+        }).then(function (response) {
+          if (response.confirmPurchasePrompt === "Confirm Purchase") {
+            updateSQL();
+          } else if (response.confirmPrompt === "Exit") {
+            console.log("Have a Great Day!")
+            // connection.end();
+            // process.exit(0);
+          }
+        });
+      }
+
+      function updateSQL() {
+        console.log("mysql updating");
       }
     });
   })
