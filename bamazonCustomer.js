@@ -77,29 +77,52 @@ const displayProductTable = () => {
           console.log("Okay try lets try again! What would you like to buy select from the list");
           displayProductTable();
         } else if (response.confirmPrompt === "Exit") {
-          connection.end();
+          console.log("Have a Great Day!")
+          // connection.end();
+          // process.exit(0);
         }
       });
-
+      // //function asking for quantity of item.
       function quantityQuestion() {
-        
+        inquirer.prompt({
+          name: "quantityPrompt",
+          message: "What quantity?",
+          type: "input",
+          default: "please type in item_Id of product",
+          validate: function (input) {
+            return !isNaN(input);
+          },
+          filter: function (input) {
+            return parseInt(input);
+          }
+        }).then(function(response) {
+          if (response.quantityPrompt > itemId.stock_quantity) {
+            console.log("Looks like we do not have enough quantity to fufil your order");
+            //inquirer prompt to loop through quantity again or exit
+            inquirer.prompt({
+              name: "confirmPrompt",
+              type: "list",
+              message: `Would you like to modify your quantity for ${itemId.product_name} to be less then ${itemId.stock_quantity}?`,
+              choices: ["Yes", "Purchase Another Item", "Exit"]
+            }).then(function (response) {
+              if (response.confirmPrompt === "Yes") {
+                quantityQuestion();
+              } else if (response.confirmPrompt === "Purchase Another Item") {
+                console.log("Okay try lets try again! What would you like to buy select from the list");
+                displayProductTable();
+              } else if (response.confirmPrompt === "Exit") {
+                console.log("Have a Great Day!")
+                // connection.end();
+                // process.exit(0);
+              }
+            });
+
+            
+
+          }
+        });
       }
 
-    })
+    });
   })
 }
-
-
-
-// {
-//   name: "quantityQuestion",
-//   message: "What quantity?",
-//   type: "input",
-//   default: "please type in item_Id of product",
-//   validate: function (input) {
-//     return !isNaN(input);
-//   },
-//   filter: function (input) {
-//     return parseInt(input);
-//   }
-// }
