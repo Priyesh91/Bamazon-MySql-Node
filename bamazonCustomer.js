@@ -31,7 +31,7 @@ function connect() {
       displayProductTable();
     } else if (response.firstPrompt === "No") {
       console.log("That's okay, See you again next time!");
-      connection.end();
+      db.end();
     }
   })
 };
@@ -77,6 +77,8 @@ const displayProductTable = () => {
       cart.unitprice = itemId.price;
       cart.stockquantity = itemId.stock_quantity;
       cart.id = itemId.item_id;
+      // console.log("itemId.item_id" + itemId.item_id);
+      // console.log("cart.id:" + cart.id);
 
       //prompt confriming product selection, if not loop back, if yes move to quantityquesiton
       inquirer.prompt({
@@ -92,7 +94,7 @@ const displayProductTable = () => {
           displayProductTable();
         } else if (response.confirmPrompt === "Exit") {
           console.log("Have a Great Day!")
-          // connection.end();
+          db.end();
           // process.exit(0);
         }
       });
@@ -127,7 +129,7 @@ const displayProductTable = () => {
                 displayProductTable();
               } else if (response.confirmPrompt === "Exit") {
                 console.log("Have a Great Day!")
-                // connection.end();
+                db.end();
                 // process.exit(0);
               }
             });
@@ -150,9 +152,9 @@ const displayProductTable = () => {
           message: `
           ------------------
           Product: ${cart.product}
-          UnitPrice: ${cart.unitprice}
+          UnitPrice: $${cart.unitprice}
           Quantity: ${cart.quantity}
-          Total: ${cart.total}
+          Total: $${cart.total}
           ------------------`,
           choices: ["Confirm Purchase", "Exit"]
         }).then(function (response) {
@@ -160,24 +162,32 @@ const displayProductTable = () => {
             updateSQL();
           } else if (response.confirmPrompt === "Exit") {
             console.log("Have a Great Day!")
-            // connection.end();
+            db.end();
             // process.exit(0);
           }
         });
       }
 
       function updateSQL() {
-        // console.log(cart);
+        // console.log("cart before update: " + cart.updatedquantity);
         cart.updatedquantity = cart.stockquantity - cart.quantity;
+        // console.log("cart after update: " +cart.updatedquantity);
+        // console.log("mysql updating");
         // console.log(cart);
-        console.log("mysql updating");
-        db.query(
-          "UPDATE products SET ? WHERE ?", {
+        // console.log(cart.id);
+        const query = db.query(
+          "UPDATE products SET ? WHERE ?", [{
             stock_quantity: cart.updatedquantity
           }, {
-            item_id: cart.itemId
+            item_id: cart.id
+          }],
+          function(err, res) {
+            if (err) throw err;
+            // console.log(res);
+            db.end();
           }
         )
+        // console.log(query.sql);
       }
     });
   })

@@ -18,5 +18,23 @@ function startFunction() {
 }
 
 nextFunction() {
-  console.log("This works")
+  console.log("This works");
 }
+
+
+
+function updateSQL() {
+  // console.log(cart);
+  cart.updatedquantity = cart.stockquantity-cart.quantity;
+  // console.log(cart);
+  console.log("mysql updating");
+  db.query(
+    "UPDATE products SET ? WHERE ?", 
+    [{
+      stock_quantity: cart.updatedquantity
+    },
+    {
+      item_id: cart.itemId
+    }],
+    function (err, results) {
+      if (err) throw err;
