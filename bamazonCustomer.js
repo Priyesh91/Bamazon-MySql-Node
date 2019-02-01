@@ -36,10 +36,13 @@ function connect() {
   })
 };
 let cart = {
+  id: 0,
   product: "",
   total: 0,
   quantity: 0,
-  unitprice: 0
+  unitprice: 0,
+  stockquantity: 0,
+  updatedquantity: 0,
 };
 //Displaying product table from mySQL using consttable and es6 attempt
 const displayProductTable = () => {
@@ -72,6 +75,8 @@ const displayProductTable = () => {
       //updating cart object with customer selection
       cart.product = itemId.product_name;
       cart.unitprice = itemId.price;
+      cart.stockquantity = itemId.stock_quantity;
+      cart.id = itemId.item_id;
 
       //prompt confriming product selection, if not loop back, if yes move to quantityquesiton
       inquirer.prompt({
@@ -137,7 +142,7 @@ const displayProductTable = () => {
       }
       //function to calculate price and confirm
       function priceFunction() {
-        console.log(cart);
+        // console.log(cart);
         // console.log("We have made it to the final price function?");
         inquirer.prompt({
           name: "confirmPurchasePrompt",
@@ -162,7 +167,17 @@ const displayProductTable = () => {
       }
 
       function updateSQL() {
+        // console.log(cart);
+        cart.updatedquantity = cart.stockquantity - cart.quantity;
+        // console.log(cart);
         console.log("mysql updating");
+        db.query(
+          "UPDATE products SET ? WHERE ?", {
+            stock_quantity: cart.updatedquantity
+          }, {
+            item_id: cart.itemId
+          }
+        )
       }
     });
   })
